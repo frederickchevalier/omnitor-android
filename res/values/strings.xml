@@ -1,0 +1,16 @@
+<resources>
+
+    <string name="app_name">Omnitor</string>
+    
+    <!-- main screen -->
+    <string name="main_text1">The easiest way to find a mobile plan that best suits you.</string>
+    <string name="main_text2">Sign up and let\'s get started!</string>
+    <string name="main_email">your email</string>
+    <string name="main_go">GO</string>
+    <!-- <string name=""></string> -->
+    <string name="signup_wait">Signing you up&#8230;</string>
+    <string name="signup_success">Successful!</string>
+    <string name="signup_error_no_net">Check your internet connection?</string>
+    <string name="signup_error_email">Oops, invalid email.</string>
+
+</resources>
