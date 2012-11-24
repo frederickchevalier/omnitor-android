@@ -7,10 +7,13 @@
     <string name="main_text2">Sign up and let\'s get started!</string>
     <string name="main_email">your email</string>
     <string name="main_go">GO</string>
-    <!-- <string name=""></string> -->
+    
     <string name="signup_wait">Signing you up&#8230;</string>
     <string name="signup_success">Successful!</string>
     <string name="signup_error_no_net">Check your internet connection?</string>
     <string name="signup_error_email">Oops, invalid email.</string>
-
+    
+    <!-- hello screen -->
+    <string name="hello_text">Hello! Don\'t mind us&#8212;we\'re working in the background. Go do your stuff as usual.</string>
+    
 </resources>

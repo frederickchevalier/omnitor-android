@@ -12,6 +12,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -39,7 +40,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
         this.signupToast = signupToast;
         this.successMessage = context.getString(R.string.signup_success);
         this.noNetMessage = context.getString(R.string.signup_error_no_net);
-        prefs = context.getSharedPreferences(This.PREFS, Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
         
         this.pd = new ProgressDialog(context);
         pd.setMessage(context.getString(R.string.signup_wait));
@@ -94,7 +95,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
         signupToast.show();
         
         if (toastMessage.equals(successMessage)) {
-            //context.startActivity(new Intent(context, HelloActivity.class));
+            context.startActivity(new Intent(context, HelloActivity.class));
             ((MainActivity) context).finish();
         }
     }

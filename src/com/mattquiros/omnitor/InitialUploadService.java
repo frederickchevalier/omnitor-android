@@ -28,7 +28,7 @@ public class InitialUploadService extends Service {
             @Override
             public void run() {
                 Log.d(This.LOG_TAG, "STARTED: initial upload");
-                SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_MULTI_PROCESS);
                 Editor editor = prefs.edit();
                 String uuid = prefs.getString(This.KEY_UUID, This.NULL);
                 String deviceLog = prefs.getString(This.KEY_DEVICE_LOG, null);

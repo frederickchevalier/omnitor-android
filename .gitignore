@@ -19,3 +19,5 @@ local.properties
 .classpath
 .settings
 #.project
+
+src/com/mattquiros/omnitor/util/API.java

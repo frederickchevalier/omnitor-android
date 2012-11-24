@@ -51,6 +51,7 @@
 	        android:layout_weight=".8"
 	        android:layout_height="match_parent"
 	        android:hint="@string/main_email"
+            android:inputType="textEmailAddress"
 	        android:background="#ccc"
 	        android:textColorHint="#fff"
 	        android:padding="5dp"

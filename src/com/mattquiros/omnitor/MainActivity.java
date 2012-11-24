@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
         Editor editor = prefs.edit();
         
         if (prefs.getBoolean(This.KEY_SIGNED_UP, false)) {
-            
+            setContentView(R.layout.hello);
         } else {
             setContentView(R.layout.main);
         }
