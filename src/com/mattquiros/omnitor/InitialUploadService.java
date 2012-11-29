@@ -14,10 +14,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.mattquiros.omnitor.pojo.DeviceLog;
+import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
 public class InitialUploadService extends Service {
@@ -27,7 +27,7 @@ public class InitialUploadService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d(This.LOG_TAG, "STARTED: initial upload");
+                Logger.d("STARTED: initial upload");
                 SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_MULTI_PROCESS);
                 Editor editor = prefs.edit();
                 String uuid = prefs.getString(This.KEY_UUID, This.NULL);
@@ -41,7 +41,7 @@ public class InitialUploadService extends Service {
                     editor.commit();
                 }
                 
-                Log.d(This.LOG_TAG, "deviceLog: " + deviceLog);
+                Logger.d("deviceLog: " + deviceLog);
                 HttpClient client = new DefaultHttpClient();
                 HttpPost post = new HttpPost(This.URL);
                 post.setHeader("content-type", "application/json");
@@ -50,18 +50,18 @@ public class InitialUploadService extends Service {
                     HttpResponse response = client.execute(post);
                     int responseCode = response.getStatusLine().getStatusCode();
                     if (responseCode == HttpStatus.SC_OK) {
-                        Log.d(This.LOG_TAG, "Initial upload successful! Removing device log from phone...");
+                        Logger.d("Initial upload successful! Removing device log from phone...");
                         editor.remove(This.KEY_DEVICE_LOG);
                         editor.commit();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.d(This.LOG_TAG, "Initial upload failed. Rescheduling...");
+                    Logger.d("Initial upload failed. Rescheduling...");
                     PendingIntent pi = PendingIntent.getService(InitialUploadService.this, 0, intent, 0);
                     AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
                     am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000L * 1L, pi);
                 } finally {
-                    Log.d(This.LOG_TAG, "FINISHED: initial upload");
+                    Logger.d("FINISHED: initial upload");
                 }
             }
         }).start();

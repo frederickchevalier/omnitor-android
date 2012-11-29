@@ -16,11 +16,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.mattquiros.omnitor.pojo.UserLog;
+import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
 public class SignUpTask extends AsyncTask<Void, Void, Void> {
@@ -54,7 +54,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
     
     @Override
     protected Void doInBackground(Void... params) {
-        Log.d(This.LOG_TAG, "STARTED sign up task");
+        Logger.d("STARTED sign up task");
         toastMessage = null;
         HttpClient client = new DefaultHttpClient();
         HttpPost post = new HttpPost(This.URL);
@@ -62,7 +62,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
         try {
             String uuid = prefs.getString(This.KEY_UUID, This.NULL);
             String userLog = new Gson().toJson(new UserLog(uuid, email));
-            Log.d(This.LOG_TAG, "user log: " + userLog);
+            Logger.d("user log: " + userLog);
             post.setEntity(new StringEntity(userLog));
             HttpResponse response = client.execute(post);
             StatusLine statusLine = response.getStatusLine();
@@ -80,7 +80,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
             toastMessage = "Error: " + e.getMessage();
             e.printStackTrace();
         }
-        Log.d(This.LOG_TAG, "FINISHED sign up task");
+        Logger.d("FINISHED sign up task");
         return null;
     }
     

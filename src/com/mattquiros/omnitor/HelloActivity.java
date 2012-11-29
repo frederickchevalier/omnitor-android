@@ -1,11 +1,13 @@
 package com.mattquiros.omnitor;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Window;
 
 public class HelloActivity extends Activity {
     
+    @TargetApi(11)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (android.os.Build.VERSION.SDK_INT >= 11) {

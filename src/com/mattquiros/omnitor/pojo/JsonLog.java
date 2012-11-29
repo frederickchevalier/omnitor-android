@@ -1,6 +1,6 @@
 package com.mattquiros.omnitor.pojo;
 
-abstract class JsonLog {
+public abstract class JsonLog {
     
     private String uuid;
     

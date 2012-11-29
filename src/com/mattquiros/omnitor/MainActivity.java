@@ -30,7 +30,7 @@ public class MainActivity extends Activity {
         }
         super.onCreate(savedInstanceState);
         
-        SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_MULTI_PROCESS);
         Editor editor = prefs.edit();
         
         if (prefs.getBoolean(This.KEY_SIGNED_UP, false)) {
@@ -52,6 +52,8 @@ public class MainActivity extends Activity {
             
             Intent initialUpload = new Intent(this, InitialUploadService.class);
             startService(initialUpload);
+            
+            new AlarmScheduler(this, true).start();
         }
     }
     
