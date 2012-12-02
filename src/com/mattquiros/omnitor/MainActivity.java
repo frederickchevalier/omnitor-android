@@ -14,6 +14,7 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mattquiros.omnitor.thread.AlarmScheduler;
 import com.mattquiros.omnitor.util.This;
 
 public class MainActivity extends Activity {

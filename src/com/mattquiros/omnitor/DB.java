@@ -25,7 +25,7 @@ public class DB extends SQLiteOpenHelper {
         super(context, NAME, null, VERSION);
     }
     
-    public DB getInstance(Context context) {
+    public static DB getInstance(Context context) {
         if (instance == null) {
             instance = new DB(context);
         }

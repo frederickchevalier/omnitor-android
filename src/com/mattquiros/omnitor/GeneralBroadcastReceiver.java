@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import com.mattquiros.omnitor.thread.AlarmScheduler;
+import com.mattquiros.omnitor.thread.InSmsLogger;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
@@ -16,6 +18,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
         Logger.d("GeneralBroadcastReceiver received action: " + action);
         
         if (action.equals("android.provider.Telephony.SMS_RECEIVED")) {
+            new InSmsLogger(context, intent.getExtras()).start();
             return;
         }
         
