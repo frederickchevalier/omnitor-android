@@ -54,7 +54,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
     
     @Override
     protected Void doInBackground(Void... params) {
-        Logger.d("STARTED sign up task");
+        Logger.d("STARTED: SignUpTask");
         toastMessage = null;
         HttpClient client = new DefaultHttpClient();
         HttpPost post = new HttpPost(This.URL);
@@ -80,7 +80,7 @@ public class SignUpTask extends AsyncTask<Void, Void, Void> {
             toastMessage = "Error: " + e.getMessage();
             e.printStackTrace();
         }
-        Logger.d("FINISHED sign up task");
+        Logger.d("FINISHED: SignUpTask");
         return null;
     }
     

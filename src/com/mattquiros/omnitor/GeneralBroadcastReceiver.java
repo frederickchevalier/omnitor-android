@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 
 import com.mattquiros.omnitor.thread.AlarmScheduler;
 import com.mattquiros.omnitor.thread.InSmsLogger;
+import com.mattquiros.omnitor.thread.OutSmsLogger;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
@@ -23,6 +24,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
         }
         
         if (action.equals(This.ACTION_CHECK_OUT_SMS)) {
+            new OutSmsLogger(context).start();
             return;
         }
         

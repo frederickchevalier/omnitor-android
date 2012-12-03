@@ -27,7 +27,7 @@ public class InitialUploadService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Logger.d("STARTED: initial upload");
+                Logger.d("STARTED: InitialUploadService");
                 SharedPreferences prefs = getSharedPreferences(This.PREFS, MODE_MULTI_PROCESS);
                 Editor editor = prefs.edit();
                 String uuid = prefs.getString(This.KEY_UUID, This.NULL);
@@ -61,7 +61,7 @@ public class InitialUploadService extends Service {
                     AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
                     am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000L * 1L, pi);
                 } finally {
-                    Logger.d("FINISHED: initial upload");
+                    Logger.d("FINISHED: InitialUploadService");
                 }
             }
         }).start();
