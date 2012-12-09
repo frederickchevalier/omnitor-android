@@ -19,7 +19,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.mattquiros.omnitor.pojo.UserLog;
+import com.mattquiros.omnitor.bean.UserLog;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 

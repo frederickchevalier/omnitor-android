@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.mattquiros.omnitor.thread.AlarmScheduler;
-import com.mattquiros.omnitor.thread.InSmsLogger;
-import com.mattquiros.omnitor.thread.OutSmsLogger;
+import com.mattquiros.omnitor.logger.DataLogger;
+import com.mattquiros.omnitor.logger.InSmsLogger;
+import com.mattquiros.omnitor.logger.OutSmsLogger;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
@@ -29,6 +29,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
         }
         
         if (action.equals(This.ACTION_LOG_DATA)) {
+            new DataLogger(context).start();
             return;
         }
         

@@ -1,4 +1,4 @@
-package com.mattquiros.omnitor.pojo;
+package com.mattquiros.omnitor.bean;
 
 import com.mattquiros.omnitor.util.This;
 

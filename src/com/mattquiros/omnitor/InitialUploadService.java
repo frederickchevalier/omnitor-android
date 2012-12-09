@@ -16,7 +16,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.IBinder;
 
 import com.google.gson.Gson;
-import com.mattquiros.omnitor.pojo.DeviceLog;
+import com.mattquiros.omnitor.bean.DeviceLog;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 

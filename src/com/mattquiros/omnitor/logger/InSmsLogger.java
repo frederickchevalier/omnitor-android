@@ -1,4 +1,4 @@
-package com.mattquiros.omnitor.thread;
+package com.mattquiros.omnitor.logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +8,8 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
 
-import com.google.gson.Gson;
 import com.mattquiros.omnitor.DB;
-import com.mattquiros.omnitor.pojo.JsonLog;
-import com.mattquiros.omnitor.pojo.SmsLog;
+import com.mattquiros.omnitor.bean.SmsLog;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
@@ -39,11 +37,8 @@ public class InSmsLogger extends Thread {
                     smsMessage.getMessageBody().length(), tm.isNetworkRoaming()));
         }
         
-        DB db = DB.getInstance(context);
-        db.addSmsLogs(smsLogs);
-        List<JsonLog> results = db.getAllLogs();
-        Logger.d("logs: " + new Gson().toJson(results));
-        
+        DB.getInstance(context).addSmsLogs(smsLogs);
+        Logger.printAll(context);
         Logger.d("FINISHED: InSmsLogger");
     }
     

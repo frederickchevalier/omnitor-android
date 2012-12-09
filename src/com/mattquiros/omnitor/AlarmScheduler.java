@@ -1,4 +1,4 @@
-package com.mattquiros.omnitor.thread;
+package com.mattquiros.omnitor;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

@@ -1,4 +1,4 @@
-package com.mattquiros.omnitor.thread;
+package com.mattquiros.omnitor.logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import android.net.Uri;
 import android.telephony.TelephonyManager;
 
 import com.mattquiros.omnitor.DB;
-import com.mattquiros.omnitor.pojo.SmsLog;
+import com.mattquiros.omnitor.bean.SmsLog;
 import com.mattquiros.omnitor.util.Logger;
 import com.mattquiros.omnitor.util.This;
 
@@ -78,6 +78,8 @@ public class OutSmsLogger extends Thread {
         Editor editor = prefs.edit();
         editor.putLong(This.KEY_TIME_LAST_CHECKED_OUT_SMS, timeLastChecked);
         editor.commit();
+        
+        Logger.printAll(context);
         Logger.d("FINISHED: OutSmsLogger");
     }
     
