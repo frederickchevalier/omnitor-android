@@ -4,6 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.TrafficStats;
+import android.telephony.TelephonyManager;
 
 import com.mattquiros.omnitor.logger.DataLogger;
 import com.mattquiros.omnitor.logger.InSmsLogger;
@@ -49,6 +52,23 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
                     This.PREFS, Context.MODE_MULTI_PROCESS);
             if (!prefs.getBoolean(This.KEY_FIRST_RUN, true)) {
                 new AlarmScheduler(context, false).start();
+            }
+            return;
+        }
+        
+        // UNTESTED CODE: detecting change in network roaming state
+        if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            boolean newRoamingState = tm.isNetworkRoaming();
+            boolean oldRoamingState = context.getSharedPreferences(This.PREFS,
+                    Context.MODE_MULTI_PROCESS).getBoolean(This.KEY_ROAMING_STATE, newRoamingState);
+            
+            if (newRoamingState != oldRoamingState) {
+                Logger.d("DETECTED roaming state change: " + oldRoamingState + " to " + newRoamingState);
+                new OutSmsLogger(context, oldRoamingState).start();
+                if (TrafficStats.getMobileRxBytes() != TrafficStats.UNSUPPORTED) {
+                    new DataLogger(context, oldRoamingState).start();
+                }
             }
             return;
         }

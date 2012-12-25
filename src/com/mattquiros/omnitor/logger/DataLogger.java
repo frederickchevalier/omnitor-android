@@ -18,23 +18,31 @@ import com.mattquiros.omnitor.util.This;
 public class DataLogger extends Thread {
     
     private Context context;
+    private SharedPreferences prefs;
     private long oldMobileTxBytes;
     private long oldMobileRxBytes;
     private long oldNetworkTxBytes;
     private long oldNetworkRxBytes;
+    private boolean roaming;
     
     public DataLogger(Context context) {
         this.context = context;
+        prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
+        roaming = prefs.getBoolean(This.KEY_ROAMING_STATE,
+                ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).isNetworkRoaming());
+    }
+    
+    public DataLogger(Context context, boolean roamingStateToUse) {
+        this.context = context;
+        prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
+        roaming = roamingStateToUse;
     }
     
     @Override
     public void run() {
         Logger.d("STARTED: DataLogger");
-        SharedPreferences prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
         Editor editor = prefs.edit();
         oldMobileTxBytes = prefs.getLong(This.KEY_MOBILE_TX, This.DEFAULT_LONG);
-        boolean oldRoamingState = prefs.getBoolean(This.KEY_ROAMING_STATE,
-                ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).isNetworkRoaming());
         String uuid = prefs.getString(This.KEY_UUID, This.NULL);
         
         // if it's not the first run
@@ -63,7 +71,7 @@ public class DataLogger extends Thread {
                     mobileReceived,
                     networkSent,
                     networkReceived,
-                    oldRoamingState);
+                    roaming);
             DB.getInstance(context).addDataLog(dataLog);
             Logger.d("added: " + new Gson().toJson(dataLog));
             

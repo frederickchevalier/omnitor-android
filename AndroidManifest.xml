@@ -33,6 +33,7 @@
                 <action android:name="com.mattquiros.omnitor.ACTION_UPLOAD_LOGS" />
                 <action android:name="com.mattquiros.omnitor.ACTION_LOG_DATA" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver android:name=".logger.InCallLogger">
