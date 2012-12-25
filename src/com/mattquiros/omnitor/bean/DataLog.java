@@ -12,9 +12,9 @@ public class DataLog extends JsonLog {
     private long network_received;
     private boolean roaming;
     
-    public DataLog(long time, long mobileSent, long mobileReceived,
+    public DataLog(String uuid, long time, long mobileSent, long mobileReceived,
             long networkSent, long networkReceived, boolean isRoaming) {
-        super();
+        super(uuid);
         this.type = This.TYPE_DATA;
         this.time = time;
         this.mobile_sent = mobileSent;

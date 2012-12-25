@@ -25,10 +25,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".HelloActivity"></activity>
-        <service android:name=".InitialUploadService"></service>
         <receiver android:name=".GeneralBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <action android:name="com.mattquiros.omnitor.ACTION_INITIAL_UPLOAD" />
                 <action android:name="com.mattquiros.omnitor.ACTION_CHECK_OUT_SMS" />
                 <action android:name="com.mattquiros.omnitor.ACTION_UPLOAD_LOGS" />
                 <action android:name="com.mattquiros.omnitor.ACTION_LOG_DATA" />
@@ -38,6 +38,11 @@
         <receiver android:name=".logger.InCallLogger">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".logger.OutCallLogger">
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
     </application>

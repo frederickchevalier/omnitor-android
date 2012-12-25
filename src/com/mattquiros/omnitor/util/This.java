@@ -20,6 +20,7 @@ public abstract class This {
     public static final String KEY_NETWORK_TX = "ntx";
     public static final String KEY_NETWORK_RX = "nrx";
     
+    public static final String ACTION_INITIAL_UPLOAD = "com.mattquiros.omnitor.ACTION_INITIAL_UPLOAD";
     public static final String ACTION_CHECK_OUT_SMS = "com.mattquiros.omnitor.ACTION_CHECK_OUT_SMS";
     public static final String ACTION_UPLOAD_LOGS = "com.mattquiros.omnitor.ACTION_UPLOAD_LOGS";
     public static final String ACTION_LOG_DATA = "com.mattquiros.omnitor.ACTION_LOG_DATA";

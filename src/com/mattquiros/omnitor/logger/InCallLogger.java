@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 
+import com.google.gson.Gson;
 import com.mattquiros.omnitor.DB;
 import com.mattquiros.omnitor.bean.InCallLog;
 import com.mattquiros.omnitor.util.Logger;
+import com.mattquiros.omnitor.util.This;
 
 public class InCallLogger extends BroadcastReceiver {
     
@@ -28,7 +30,6 @@ public class InCallLogger extends BroadcastReceiver {
         
         // ringing
         if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-            Logger.d("STARTED: InCallLogger");
             timeStarted = System.currentTimeMillis();
 
             number = extras.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
@@ -49,17 +50,21 @@ public class InCallLogger extends BroadcastReceiver {
         // ended
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE) && timeStarted != -1L) {
             timeEnded = System.currentTimeMillis();
+            final String uuid = context.getSharedPreferences(This.PREFS,
+                    Context.MODE_MULTI_PROCESS).getString(This.KEY_UUID, This.NULL);
             new Thread() {
                 public void run() {
-                    DB.getInstance(context).addCallLog(new InCallLog(timeStarted,
-                        timeAnswered, timeEnded, isRoaming, number, simNumber));
+                    Logger.d("STARTED: InCallLogger");
+                    InCallLog callLog = new InCallLog(uuid, timeStarted,
+                            timeAnswered, timeEnded, isRoaming, number, simNumber);
+                    DB db = DB.getInstance(context);
+                    db.addCallLog(callLog);
+                    Logger.d("added: " + new Gson().toJson(callLog));
                     
                     // reset timeStarted to -1 because android may invoke this
                     // state even when the call is outgoing and without going
                     // through EXTRA_STATE_RINGING first
                     timeStarted = -1L;
-                    
-                    Logger.printAll(context);
                     Logger.d("FINISHED: InCallLogger");
                 };
             }.start();

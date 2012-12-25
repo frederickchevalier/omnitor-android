@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.telephony.TelephonyManager;
 
+import com.google.gson.Gson;
 import com.mattquiros.omnitor.DB;
 import com.mattquiros.omnitor.bean.SmsLog;
 import com.mattquiros.omnitor.util.Logger;
@@ -41,6 +42,7 @@ public class OutSmsLogger extends Thread {
         timeLastChecked = prefs.getLong(This.KEY_TIME_LAST_CHECKED_OUT_SMS, This.DEFAULT_LONG);
         tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         roaming = prefs.getBoolean(This.KEY_ROAMING_STATE, tm.isNetworkRoaming());
+        String uuid = prefs.getString(This.KEY_UUID, This.NULL);
         
         Cursor cursor = context.getContentResolver().query(SMS_URI, COLUMNS,
                 WHERE + " AND date > " + timeLastChecked, null, ORDER);
@@ -56,7 +58,8 @@ public class OutSmsLogger extends Thread {
                 date = cursor.getLong(cursor.getColumnIndex("date"));
                 address = cursor.getString(cursor.getColumnIndex("address"));
                 body = cursor.getString(cursor.getColumnIndex("body"));
-                outSmsLog = new SmsLog(This.TYPE_OUT_SMS, address, simNumber, date, body.length(), roaming);
+                outSmsLog = new SmsLog(uuid, This.TYPE_OUT_SMS,
+                        address, simNumber, date, body.length(), roaming);
                 
                 if (smsLogs.contains(outSmsLog)) {
                     continue;
@@ -71,7 +74,9 @@ public class OutSmsLogger extends Thread {
         } else {
             List<SmsLog> smsLogsList = new ArrayList<SmsLog>();
             smsLogsList.addAll(smsLogs);
-            DB.getInstance(context).addSmsLogs(smsLogsList);
+            DB db = DB.getInstance(context);
+            db.addSmsLogs(smsLogsList);
+            Logger.d("added: " + new Gson().toJson(smsLogsList));
         }
         
         cursor.close();
@@ -79,7 +84,6 @@ public class OutSmsLogger extends Thread {
         editor.putLong(This.KEY_TIME_LAST_CHECKED_OUT_SMS, timeLastChecked);
         editor.commit();
         
-        Logger.printAll(context);
         Logger.d("FINISHED: OutSmsLogger");
     }
     

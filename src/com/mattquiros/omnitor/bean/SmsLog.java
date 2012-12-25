@@ -9,9 +9,9 @@ public class SmsLog extends JsonLog {
     private int length;
     private boolean roaming;
     
-    public SmsLog(String type, String number, String simNumber, long time,
-            int length, boolean isRoaming) {
-        super();
+    public SmsLog(String uuid, String type, String number, String simNumber,
+            long time, int length, boolean isRoaming) {
+        super(uuid);
         this.type = type;
         this.number = number;
         this.sim_number = simNumber;

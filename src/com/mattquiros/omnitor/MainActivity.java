@@ -50,8 +50,7 @@ public class MainActivity extends Activity {
             editor.putLong(This.KEY_TIME_LAST_CHECKED_OUT_SMS, currentTime);
             editor.commit();
             
-            Intent initialUpload = new Intent(this, InitialUploadService.class);
-            startService(initialUpload);
+            sendBroadcast(new Intent(This.ACTION_INITIAL_UPLOAD));
             
             new AlarmScheduler(this, true).start();
         }

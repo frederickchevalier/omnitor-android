@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor;
 import android.net.TrafficStats;
 import android.telephony.TelephonyManager;
 
+import com.google.gson.Gson;
 import com.mattquiros.omnitor.DB;
 import com.mattquiros.omnitor.bean.DataLog;
 import com.mattquiros.omnitor.util.Logger;
@@ -34,6 +35,7 @@ public class DataLogger extends Thread {
         oldMobileTxBytes = prefs.getLong(This.KEY_MOBILE_TX, This.DEFAULT_LONG);
         boolean oldRoamingState = prefs.getBoolean(This.KEY_ROAMING_STATE,
                 ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).isNetworkRoaming());
+        String uuid = prefs.getString(This.KEY_UUID, This.NULL);
         
         // if it's not the first run
         if (oldMobileTxBytes != This.DEFAULT_LONG) {
@@ -55,13 +57,15 @@ public class DataLogger extends Thread {
             long networkReceived = currentNetworkRxBytes - oldNetworkRxBytes < 0 ?
                     currentNetworkRxBytes : currentNetworkRxBytes - oldNetworkRxBytes;
             
-            DB.getInstance(context).addDataLog(
-                    new DataLog(System.currentTimeMillis(),
+            DataLog dataLog = new DataLog(uuid,
+                    System.currentTimeMillis(),
                     mobileSent,
                     mobileReceived,
                     networkSent,
                     networkReceived,
-                    oldRoamingState));
+                    oldRoamingState);
+            DB.getInstance(context).addDataLog(dataLog);
+            Logger.d("added: " + new Gson().toJson(dataLog));
             
             editor.putLong(This.KEY_MOBILE_TX, currentMobileTxBytes);
             editor.putLong(This.KEY_MOBILE_RX, currentMobileRxBytes);

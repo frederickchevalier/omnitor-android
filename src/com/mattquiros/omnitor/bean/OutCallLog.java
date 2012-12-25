@@ -11,9 +11,9 @@ public class OutCallLog extends JsonLog {
     private String number;
     private String sim_number;
     
-    public OutCallLog(long timeStarted, long timeEnded, boolean isRoaming,
-            String number, String simNumber) {
-        super();
+    public OutCallLog(String uuid, long timeStarted, long timeEnded,
+            boolean isRoaming, String number, String simNumber) {
+        super(uuid);
         this.type = This.TYPE_OUT_CALL;
         this.time_started = timeStarted;
         this.time_ended = timeEnded;

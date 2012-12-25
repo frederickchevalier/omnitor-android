@@ -15,6 +15,7 @@ import com.mattquiros.omnitor.bean.InCallLog;
 import com.mattquiros.omnitor.bean.JsonLog;
 import com.mattquiros.omnitor.bean.OutCallLog;
 import com.mattquiros.omnitor.bean.SmsLog;
+import com.mattquiros.omnitor.util.This;
 
 public class DB extends SQLiteOpenHelper {
     
@@ -27,9 +28,12 @@ public class DB extends SQLiteOpenHelper {
     private static final String TABLE_DATA = "DATA";
     
     private static DB instance = null;
+    private static String uuid = null;
     
     private DB(Context context) {
         super(context, NAME, null, VERSION);
+        uuid = context.getSharedPreferences(This.PREFS,
+                Context.MODE_MULTI_PROCESS).getString(This.KEY_UUID, This.NULL);
     }
     
     public static DB getInstance(Context context) {
@@ -42,19 +46,19 @@ public class DB extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE_SMS = "CREATE TABLE " + TABLE_SMS +
-                "(UUID TEXT PRIMARY KEY, TYPE TEXT, NUMBER TEXT, SIM_NUMBER TEXT, " +
+                "(UUID TEXT, TYPE TEXT, NUMBER TEXT, SIM_NUMBER TEXT, " +
                 "TIME INTEGER, LENGTH INTEGER, ROAMING NUMERIC)";
         String CREATE_TABLE_IN_CALL = "CREATE TABLE " + TABLE_IN_CALL +
-                "(UUID TEXT PRIMARY KEY, TYPE TEXT, TIME_STARTED INTEGER, " +
+                "(UUID TEXT, TYPE TEXT, TIME_STARTED INTEGER, " +
                 "TIME_ANSWERED INTEGER, TIME_ENDED INTEGER, ROAMING NUMERIC, " +
                 "NUMBER TEXT, SIM_NUMBER TEXT)";
         String CREATE_TABLE_OUT_CALL = "CREATE TABLE " + TABLE_OUT_CALL +
-                "(UUID TEXT PRIMARY KEY, TYPE TEXT, TIME_STARTED INTEGER, " +
+                "(UUID TEXT, TYPE TEXT, TIME_STARTED INTEGER, " +
                 "TIME_ENDED INTEGER, ROAMING NUMERIC, NUMBER TEXT, SIM_NUMBER TEXT)";
         String CREATE_TABLE_DATA = "CREATE TABLE " + TABLE_DATA +
-                "(UUID TEXT PRIMARY KEY, TYPE TEXT, TIME INTEGER, MOBILE_SENT INTEGER, " +
+                "(UUID TEXT, TYPE TEXT, TIME INTEGER, MOBILE_SENT INTEGER, " +
                 "MOBILE_RECEIVED INTEGER, NETWORK_SENT INTEGER, NETWORK_RECEIVED INTEGER, " +
-                "ROAMING NUMERIC";
+                "ROAMING NUMERIC)";
         db.execSQL(CREATE_TABLE_SMS);
         db.execSQL(CREATE_TABLE_IN_CALL);
         db.execSQL(CREATE_TABLE_OUT_CALL);
@@ -108,7 +112,6 @@ public class DB extends SQLiteOpenHelper {
         } else {
             db.insert(TABLE_OUT_CALL, null, values);
         }
-        db.close();
     }
     
     public void addDataLog(DataLog dataLog) {
@@ -122,7 +125,7 @@ public class DB extends SQLiteOpenHelper {
         values.put("NETWORK_SENT", dataLog.getNetwork_sent());
         values.put("NETWORK_RECEIVED", dataLog.getNetwork_received());
         values.put("ROAMING", dataLog.isRoaming());
-        db.close();
+        db.insert(TABLE_DATA, null, values);
     }
     
     public List<JsonLog> getAllLogs() {
@@ -139,7 +142,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_SMS, null);
         if (cursor.moveToFirst()) {
             do {
-                smsLogs.add(new SmsLog(cursor.getString(cursor.getColumnIndex("TYPE")),
+                smsLogs.add(new SmsLog(uuid, cursor.getString(cursor.getColumnIndex("TYPE")),
                     cursor.getString(cursor.getColumnIndex("NUMBER")),
                     cursor.getString(cursor.getColumnIndex("SIM_NUMBER")),
                     cursor.getLong(cursor.getColumnIndex("TIME")),
@@ -157,7 +160,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_IN_CALL, null);
         if (cursor.moveToFirst()) {
             do {
-                callLogs.add(new InCallLog(
+                callLogs.add(new InCallLog(uuid,
                         cursor.getLong(cursor.getColumnIndex("TIME_STARTED")),
                         cursor.getLong(cursor.getColumnIndex("TIME_ANSWERED")),
                         cursor.getLong(cursor.getColumnIndex("TIME_ENDED")),
@@ -171,7 +174,7 @@ public class DB extends SQLiteOpenHelper {
         cursor = db.rawQuery("SELECT * FROM " + TABLE_OUT_CALL, null);
         if (cursor.moveToFirst()) {
             do {
-                callLogs.add(new OutCallLog(
+                callLogs.add(new OutCallLog(uuid,
                         cursor.getLong(cursor.getColumnIndex("TIME_STARTED")),
                         cursor.getLong(cursor.getColumnIndex("TIME_ENDED")),
                         cursor.getInt(cursor.getColumnIndex("ROAMING")) == 1 ? true : false,
@@ -189,7 +192,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_DATA, null);
         if (cursor.moveToFirst()) {
             do {
-                dataLogs.add(new DataLog(
+                dataLogs.add(new DataLog(uuid,
                         cursor.getLong(cursor.getColumnIndex("TIME")),
                         cursor.getLong(cursor.getColumnIndex("MOBILE_SENT")),
                         cursor.getLong(cursor.getColumnIndex("MOBILE_RECEIVED")),
@@ -215,6 +218,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SMS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_IN_CALL);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_OUT_CALL);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DATA);
         onCreate(db);
     }
 
