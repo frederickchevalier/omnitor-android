@@ -1,6 +1,4 @@
-# omnitor-android
-
-Omnitor for Android is the open-source version of one of my past projects. The app records the user's mobile phone consumption--sent and received SMS, incoming and outgoing calls, bytes of data sent and received via mobile internet and WiFi/LAN, and the network roaming state as these transactions occur. These logs are uploaded to a server on a regular schedule, and are used by the client to recommend to the user the best mobile plan available on a local telco.
+Omnitor for Android is the open-source version of one of my old projects. The app records the user's mobile phone consumption--sent and received SMS, incoming and outgoing calls, bytes of data sent and received via mobile internet and WiFi/LAN, and the network roaming state as these transactions occur. These logs are uploaded to a server on a regular schedule, and are used by the client to recommend to the user the best mobile plan available on a local telco.
 
 ### First run
 
@@ -147,3 +145,7 @@ The <code>Uploader</code>, as its name implies, performs the task of uploading. 
 ### Thread collisions
 
 Note that the above tasks may be fired concurrently and arbitrarily. Synchronous access to the SQLite database is properly handled. However, since it's possible for the <code>Uploader</code> to finish before the other loggers, logs created after the upload will be uploaded in the next scheduled alarm.
+
+### About the Author
+
+I'm Matt Quiros, Android developer from the Philippines. My personal website's at [mattquiros.com](http://www.mattquiros.com).
