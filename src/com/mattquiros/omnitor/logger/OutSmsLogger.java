@@ -34,12 +34,12 @@ public class OutSmsLogger extends Thread {
     public OutSmsLogger(Context context) {
         this.context = context;
         prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
+        tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         roaming = prefs.getBoolean(This.KEY_ROAMING_STATE, tm.isNetworkRoaming());
     }
     
     public OutSmsLogger(Context context, boolean roamingStateToUse) {
-        this.context = context;
-        prefs = context.getSharedPreferences(This.PREFS, Context.MODE_MULTI_PROCESS);
+        this(context);
         roaming = roamingStateToUse;
     }
     
@@ -47,7 +47,6 @@ public class OutSmsLogger extends Thread {
     public void run() {
         Logger.d("STARTED: OutSmsLogger");
         timeLastChecked = prefs.getLong(This.KEY_TIME_LAST_CHECKED_OUT_SMS, This.DEFAULT_LONG);
-        tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String uuid = prefs.getString(This.KEY_UUID, This.NULL);
         
         Cursor cursor = context.getContentResolver().query(SMS_URI, COLUMNS,

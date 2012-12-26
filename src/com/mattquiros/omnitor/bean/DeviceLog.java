@@ -5,16 +5,16 @@ public class DeviceLog extends JsonLog {
     private String type;
     private String manufacturer;
     private String model;
-    private long installTime;
+    private long first_run;
     
     public DeviceLog() {}
     
-    public DeviceLog(String uuid, String manufacturer, String model, long installTime) {
+    public DeviceLog(String uuid, String manufacturer, String model, long firstRun) {
         super(uuid);
         this.type = "device";
         this.manufacturer = manufacturer;
         this.model = model;
-        this.installTime = installTime;
+        this.first_run = firstRun;
     }
 
     public String getType() {
@@ -41,12 +41,12 @@ public class DeviceLog extends JsonLog {
         this.model = model;
     }
 
-    public long getInstallTime() {
-        return installTime;
+    public long getFirst_run() {
+        return first_run;
     }
 
-    public void setInstallTime(long installTime) {
-        this.installTime = installTime;
+    public void setFirst_run(long first_run) {
+        this.first_run = first_run;
     }
     
 }

@@ -47,10 +47,10 @@ public class Uploader extends Thread {
             } else {
                 Logger.d("Uploader failed. " + status.getStatusCode() + ": " + status.getReasonPhrase());
             }
+            lock.setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        lock.setTransactionSuccessful();
         lock.endTransaction();
         Logger.d("FINISHED: Uploader");
     }
