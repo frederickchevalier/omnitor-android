@@ -127,7 +127,7 @@ Omnitor distinguishes between data consumption over WiFi/LAN and over mobile int
 
 Caution: This is the only part of the code that is based on StackOverflow research and is left UNTESTED. Network roaming occurs when the phone goes through third-party telco services to perform a transaction, and is therefore only possible to test by going out of the country.
 
-A <code>BroadcastReceiver</code> called <code>GeneralBroadcastReceiver</code> has been set up to receive "android.net.conn.CONNECTIVITY_CHANGED" together with the other tasks that Omnitor fires.
+A <code>BroadcastReceiver</code> called <code>GeneralBroadcastReceiver</code> has been set up to receive <code>android.net.conn.CONNECTIVITY_CHANGED</code> together with the other tasks that Omnitor fires.
 
 ```xml
 <receiver android:name=".GeneralBroadcastReceiver">
