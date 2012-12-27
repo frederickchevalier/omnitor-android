@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Omnitor for Android by mattquiros</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Omnitor for Android</h1>
+        <p class="header">Tracks your consumption to find the best-suited mobile plan from a local telco.</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/mattquiros/omnitor-android/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/mattquiros/omnitor-android/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/mattquiros/omnitor-android">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/mattquiros">mattquiros</a></p>
+
+
+      </header>
+      <section>
+        <p>Omnitor for Android is the open-source version of one of my old projects. The app records the user's mobile phone consumption--sent and received SMS, incoming and outgoing calls, bytes of data sent and received via mobile internet and WiFi/LAN, and the network roaming state as these transactions occur. These logs are uploaded to a server on a regular schedule, and are used by the client to recommend to the user the best mobile plan available on a local telco.</p>
+
+<h2>First run</h2>
+
+<p>On first launch, the app generates a UUID to uniquely identify the installation. It then remembers information such as the time of first launch, the current network roaming state, and the current values of Android's built-in data counters, if supported in the device.</p>
+
+<p>Then, a background thread is fired to upload device information in the below JSON format. If the upload fails, Ominitor attempts again in the next minute.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"device"</span><span class="p">,</span> <span class="c1">// type of log</span>
+    <span class="s2">"model"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"manufacturer"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"first_run"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">)</span> <span class="c1">// time when first run</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Finally, alarms are set for regularly scheduled tasks: the outgoing SMS logger (<code>OutSmsLogger</code>), the data consumption logger (<code>DataLogger</code>), and the <code>Uploader</code>. For this project, those three tasks are scheduled to be fired every 1 minute.</p>
+
+<p>The app doesn't do anything special whenever it is launched after the first time.</p>
+
+<h2>Sign up</h2>
+
+<p>If the user decides to sign up, Omnitor simply uploads the user's email together with the app's UUID.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"user"</span><span class="p">,</span>
+    <span class="s2">"email"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>If the upload fails, the app simply tries again the next minute. If successful, whenever the app is launched, a screen with the following message will always show up:</p>
+
+<pre><code>Hello! Don't mind us--we're working in the background.
+Go do your stuff as usual.
+</code></pre>
+
+<h2>Incoming SMS</h2>
+
+<p>Whenever a text message arrives, <code>InSmsLogger</code> is fired and the following information about the SMS is stored in SQLite.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"in_sms"</span><span class="p">,</span>
+    <span class="s2">"number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// the sender</span>
+    <span class="s2">"sim_number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// the user's mobile phone number</span>
+    <span class="s2">"time"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"length"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">int</span><span class="p">),</span> <span class="c1">// number of characters in the SMS</span>
+    <span class="s2">"roaming"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">boolean</span><span class="p">)</span> <span class="c1">// network roaming state upon receive</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Outgoing SMS</h2>
+
+<p><code>OutSmsLogger</code> is fired on a set schedule because there's currently no public API in Android to monitor outgoing SMSes as they are sent. The logger looks at the SMS messages that are sent and logs the following info.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"out_sms"</span><span class="p">,</span>
+    <span class="s2">"number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// the recipient</span>
+    <span class="s2">"sim_number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// user's number</span>
+    <span class="s2">"time"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"length"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">int</span><span class="p">),</span> <span class="c1">// number of characters in the SMS</span>
+    <span class="s2">"roaming"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">boolean</span><span class="p">)</span> <span class="c1">// network roaming state upon send</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>If the user deletes all the messages before the logger is fired, then it will record nothing.</p>
+
+<h2>Incoming calls</h2>
+
+<p>After an incoming call, <code>InCallLogger</code> fires a background thread that records the following information about the call.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"in_call"</span><span class="p">,</span>
+    <span class="s2">"number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// the caller</span>
+    <span class="s2">"sim_number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// user's number</span>
+    <span class="s2">"time_started"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"time_answered"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"time_ended"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"roaming"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">boolean</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Outgoing calls</h2>
+
+<p>After an outgoing call, <code>OutCallLogger</code> fires a background thread that records similar information as with incoming calls, except for <code>time_answered</code>. There currently are no public APIs in Android to detect when the other line picks up the call our user is making.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"out_call"</span><span class="p">,</span>
+    <span class="s2">"number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// the target number</span>
+    <span class="s2">"sim_number"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span> <span class="c1">// user's number</span>
+    <span class="s2">"time_started"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"time_ended"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span>
+    <span class="s2">"roaming"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">boolean</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Data consumption</h2>
+
+<p>Omnitor distinguishes between data consumption over WiFi/LAN and over mobile internet (3G, 4G). As mentioned earlier, the values of Android's built-in data counters (in bytes) are remembered upon the app's first launch. Since <code>DataLogger</code> is fired every minute, it simply subtracts the new values of those counters and creates a log in the format below.</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">"uuid"</span> <span class="o">:</span> <span class="p">(</span><span class="nx">string</span><span class="p">),</span>
+    <span class="s2">"type"</span> <span class="o">:</span> <span class="s2">"data"</span><span class="p">,</span>
+    <span class="s2">"network_sent"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span> <span class="c1">// bytes sent, WiFi/LAN</span>
+    <span class="s2">"network_received"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span> <span class="c1">// bytes received, WiFi/LAN</span>
+    <span class="s2">"mobile_sent"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span> <span class="c1">// bytes sent, mobile data</span>
+    <span class="s2">"mobile_received"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">long</span><span class="p">),</span> <span class="c1">// bytes received, mobile data</span>
+    <span class="s2">"roaming"</span> <span class="o">:</span> <span class="p">(</span><span class="kr">boolean</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Roaming</h2>
+
+<p>Caution: This is the only part of the code that is based on StackOverflow research and is left <strong>UNTESTED</strong>. Network roaming occurs when the phone goes through third-party telco services to perform a transaction, and is therefore only possible to test by going out of the country.</p>
+
+<p>A <code>BroadcastReceiver</code> called <code>GeneralBroadcastReceiver</code> has been set up to receive <code>android.net.conn.CONNECTIVITY_CHANGED</code> together with the other tasks that Omnitor fires.</p>
+
+<div class="highlight"><pre><span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">".GeneralBroadcastReceiver"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;intent-filter&gt;</span>
+        <span class="c">&lt;!-- other intent actions here --&gt;</span>
+        <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"android.net.conn.CONNECTIVITY_CHANGED"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/intent-filter&gt;</span>
+<span class="nt">&lt;/receiver&gt;</span>
+</pre></div>
+
+<p>Since the old network roaming state was remembered during the app's first launch, Omnitor simply gets the current roaming state when the above intent is fired. <code>GeneralBroadcastReceiver</code> then compares the two states and if they are not equal, <code>OutSmsLogger</code> and <code>DataLogger</code> are fired again to contain the <strong>old</strong> roaming state. This is because they are the only two loggers who are not able to record events as they happen in real-time. It is expected that from this point onward, any further triggers of <code>OutSmsLogger</code> and <code>DataLogger</code> will contain the <strong>new</strong> roaming state.</p>
+
+<h2>Uploading</h2>
+
+<p>The <code>Uploader</code>, as its name implies, performs the task of uploading. For Omnitor, the database is hosted in <a href="http://mongolab.com">MongoLab</a> and accessed via their REST interface. Whenever fired, <code>Uploader</code> simply transforms all the logs in SQLite into a single, polymorphic JSON array and sends it to the server. If successful, the SQLite database is cleared. If not, the logs will be uploaded together with the new ones in the next schedule.</p>
+
+<h2>Thread collisions</h2>
+
+<p>Note that the above tasks may be fired concurrently and arbitrarily. Synchronous access to the SQLite database is properly handled. However, since it's possible for the <code>Uploader</code> to finish before the other loggers, logs created after the upload will be uploaded in the next scheduled alarm.</p>
+
+<h2>About the Author</h2>
+
+<p>I'm Matt Quiros, Android developer from the Philippines. My personal website's at <a href="http://www.mattquiros.com">mattquiros.com</a>.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
